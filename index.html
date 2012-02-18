@@ -1,0 +1,408 @@
+<html>
+	<head>
+		<title>Nezulator: an NES emulator in javascript</title>
+		<meta name="viewport" content="width=device-width; initial-scale=1; maximum-scale=1; user-scalable=0;">
+		<meta name='jungl-site-verification' content='2ba47ff8807be3a4dea7714f8fd407c7'>
+<script src="/nezulator/jquery-1.4.2.min.js" type="text/javascript"></script> 
+<script src="https://www.google.com/jsapi?key=ABQIAAAAiiHuAMEPazGJSiQ24PntnBT70kd3Xw9K8rc1uuxifKWA9EHJLxSSFlvXs2Bu7W__D_jyegHAw4lElg" type="text/javascript"></script>
+<script type="text/javascript">
+	google.load("jquery", "1");
+</script> 
+<script type="text/javascript">
+	google.load("search", "1");
+</script> 
+<script src="jquery.gSearch-1.0.js" type="text/javascript"></script>
+<script src="minitabs/jquery.minitabs.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="minitabs/minitabs.css"></script>
+<script src="dynamicaudio.js" type="text/javascript"></script> 
+<script src="store.js" type="text/javascript"></script> 
+<script src="tea-block.js" type="text/javascript"></script> 
+<script src="base64.js" type="text/javascript"></script> 
+<script src="utf8.js" type="text/javascript"></script> 
+<script src="XAudioJS/base64.js" type="text/javascript"></script> 
+<script src="XAudioJS/swfobject.js" type="text/javascript"></script> 
+<script src="XAudioJS/waveAudio.js" type="text/javascript"></script> 
+<script src="XAudioJS/audioRunner.js" type="text/javascript"></script> 
+<script src="XAudioJS/resampler.js"></script>
+<script src="XAudioJS/XAudioServer.js" type="text/javascript"></script> 
+<script src="nezulator.js" type="text/javascript"></script> 
+<script src="jquery.twitter.search.js" type="text/javascript"></script>
+<script>
+	function gup(name)
+	{
+		name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+		var regexS = "[\\?&]"+name+"=([^&#]*)";
+		var regex = new RegExp( regexS );
+		var results = regex.exec( window.location.href );
+		if( results == null ) {
+			return "";
+		} else {
+			return results[1];
+		}
+	}	
+
+	var roms = [];
+</script>
+<!-- script src="zelex.net.js" type="text/javascript"></script-->
+<!-- script src="gamedendy.narod.ru.js" type="text/javascript"></script-->
+<!-- script src="benfirshman.com.js" type="text/javascript"></script-->
+<style>
+body {
+	background:transparent url(/nezulator/nezulator_bg2.png) repeat-x scroll center top;
+	background-color:black;
+	color: white;
+}
+canvas {
+	border: 1px solid #FFF;
+}
+.searchy2 {
+	background-color:rgba(32,32,32,0.5);
+	border: 1px solid #444;
+	border-radius: 10px;
+	padding:10px;
+	margin:3px;
+}
+#container {
+	width: 500px;
+	float:left;
+}
+
+div.twitter { margin: auto; width: 300px } 
+#twitter1 { 
+	height:300px;
+	width:300px;
+	color:black;
+}
+
+</style>
+<script>
+$(document).ready(function() {
+	$('#container').minitabs();
+});
+</script>
+</head>
+<body>
+
+
+
+<div style=float:left>
+<div id="nezulator">Loading...</div>
+<!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style " style='float:left;margin:5px;margin-left:20px'>
+<a class="addthis_button_facebook_like" fb:like:layout="button_count"></a>
+<a class="addthis_button_tweet"></a>
+<a class="addthis_counter addthis_pill_style"></a>
+</div>
+<script type="text/javascript">var addthis_config = {"data_track_clickback":true};</script>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#pubid=ra-4dbae2b85a5ee935"></script>
+<!-- AddThis Button END -->
+<br style="clear:left">
+<p class='debug'></p>
+</div>
+<a href="http://nes--still-the-best.deviantart.com/art/Dark-Side-of-the-Moon-Zelda-154959173" target=_blank style="font-size:75%; float:right;">(background)</a>
+<div id=container>
+	<div class=minitabsNav>
+		<ul>
+			<li id=tab-db>Games Database</li>
+			<li id=tab-search>Play Games</li>
+			<li id=tab-gg>Game Genie</li>
+			<li id=tab-controls>Controls</li>
+			<!-- li id=tab-settings>Settings</li -->
+			<li id=tab-legal>Legal</li>
+		</ul>
+	</div>
+	<div id=tab-db class=minitabsContent>
+		<div id=twitter1></div>
+		<br>
+		<form action="" method="get" >
+			<label for=db>Specify Database Manually:</label>
+			<input id=searchDb type=text name=db>
+			<button>Go</button>
+		</form>
+		
+	</div>
+	<div id=tab-search class=minitabsContent>
+		<div id=search>
+		<form onSubmit="return searchRoms();">
+			<label for=test>2) Search for Games:</label>
+			<input id=searchVal type=text name=test>
+			<input type=submit value="Find">
+		</form>
+		</div>
+		<br style=clear:both>
+		<div class=searchy2>
+		<!--
+		<p>After emails back and forth between my lawyer and I. I regret that google-searching for games, and then playing them is in fact an act of copyright violation. Its ridiculous I know, but blame the <a href=http://en.wikipedia.org/wiki/Digital_Millennium_Copyright_Act>DMCA</a>. There is a way to do this legally -- only one way. At first I thought that if I limited the number of simultaneous players of any game to the number of cartridges I actually own, that it would be effectively the same thing as lending my copies to people. This however was also a violation of copyright. The simple act of making a copy of the cartridge is the violation of copyright --- but wait! What if I didn't have to make a copy? What if I could stream the game directly from the cartridge onto the internet? Then no actual copies of the cartridge are ever made! Its legal. It works. Basically the internet would become one giant NES capable of playing games. However, I cannot do it alone. If you want to help finally making playing retro-games online legal - shoot me an email at jon.olick [at] gmail.com.</p> 
+		<p>Ways you can help:</p>
+		<ul>
+			<li> Donate Money:<br> 
+				<ul><li>
+				<a href="http://thejungl.com/zelex.net" target="_blank" onclick="return JunglBox('zelex.net', 0, '', 'myCustomFunction');">
+				<img src="http://c3227022.r22.cf0.rackcdn.com/JunglButton.gif">
+				</a>
+				</li></ul>
+			</li>
+			<li> Donate Skills:
+				<ul>
+					<li>Know how to Solder?</li>
+					<li>Know how to code?</li>
+				</ul>
+			</li>
+			<li> Donate Internet (for game streaming)</li>
+		</ul>
+		<p> contact me a jon.olick [at] gmail.com </p>
+		!-->
+		<div id=js-results class=searchy></div>
+		<div id=search-results class=searchy></div>
+		<div id=search-results2 class=searchy></div>
+		<div id=search-results3 class=searchy></div>
+		</div>
+	</div>
+	<div id=tab-gg class=minitabsContent>
+		<label for=gg0>Code 1: </label> <input type=text id=gg0> <br>
+		<label for=gg1>Code 2: </label> <input type=text id=gg1> <br>
+		<label for=gg2>Code 3: </label> <input type=text id=gg2> <br>
+		<label for=gg3>Code 4: </label> <input type=text id=gg3> <br>
+		<label for=gg4>Code 5: </label> <input type=text id=gg4> <br>
+		<label for=gg5>Code 6: </label> <input type=text id=gg5> <br>
+		<label for=gg6>Code 7: </label> <input type=text id=gg6> <br>
+		<label for=gg7>Code 8: </label> <input type=text id=gg7> <br>
+	</div>
+	<div id=tab-controls class=minitabsContent>
+		<table>
+		<tr><td> <label for=ctrl-a>A: </label></td><td> <input type=text id=ctrl-a value='X'> </td></tr>
+		<tr><td> <label for=ctrl-b>B: </label></td><td> <input type=text id=ctrl-b value='Z'> </td></tr>
+		<tr><td> <label for=ctrl-start>Start: </label></td><td> <input type=text id=ctrl-start value='enter'> </td></tr>
+		<tr><td> <label for=ctrl-select>Select: </label></td><td> <input type=text id=ctrl-select value='ctrl'> </td></tr>
+		<tr><td> <label for=ctrl-up>Up: </label></td><td><input type=text id=ctrl-up value='up arrow'> </td></tr>
+		<tr><td> <label for=ctrl-down>Down: </label></td><td> <input type=text id=ctrl-down value='down arrow'> </td></tr>
+		<tr><td> <label for=ctrl-left>Left: </label></td><td> <input type=text id=ctrl-left value='left arrow'> </td></tr>
+		<tr><td> <label for=ctrl-right>Right: </label></td><td> <input type=text id=ctrl-right value='right arrow'> </td></tr>
+		</table>
+	</div>
+	<div id=tab-settings class=minitabsContent>
+		<input type=checkbox id=debug-box>
+	</div>
+	<div id=tab-legal class=minitabsContent>
+		<div class=searchy2>
+		<p>I've taken good measures to make sure this site is legal and complies with fair use laws. The games are streamed only and the temporary copies deleted after use. I personally own the physical cartridge of every single game hosted on zelex.net. As far as I know, there has not been an identical production re-release of the games in question. The games have been out of the retail market for more than 10 years. The video games in question are vastly technologicall inferior to modern video games. The video games in question do not result in a commercial advantage and also result in no monetary damages. If the games would be re-released in the market, I would remove the game from the site in compliance the previous policies. If a rights holder was to provide proof of identification, copyright and status of product, these games would be handled by the same standard policy of library usage as commercially released games of known sources. If any part of this site if found to be illegal, I will take immediate action to correct the issue. Contact me at jon.olick [at] gmail.com</p>
+		<!-- p>While this website hosts absolutely 0 roms, there is still the question of is this legal? While using the emulator is legal, playing other people's game copies are illegal unless you own the rom personally and a NES console system and they are both in working order. Downloading of the roms is prohibited by the code. I believe I have taken reasonable measures to make sure the site complies with Fair Use. I will continue to take steps to ensure that this site maintains a healthy legal status by talking with other emulator developers and consulting with lawyers. If in the event that parts of this website are found to be illegal in some way, or infringing on a copyright, I'll take the appropriate action to remedy the situation. The emulator itself will always be available. Email me jon.olick [at] gmail.com.</p-->
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript"> 
+	var nez;
+
+	$("#searchVal").focus(function(){ nez.hasFocus = false; });
+
+	$("#gg0, #gg1, #gg2, #gg3, #gg4, #gg5, #gg6, #gg7").change(function(){
+		var ggc = [];
+		if($("#gg0").val()) { ggc.push($('#gg0').val()); }
+		if($("#gg1").val()) { ggc.push($('#gg1').val()); }
+		if($("#gg2").val()) { ggc.push($('#gg2').val()); }
+		if($("#gg3").val()) { ggc.push($('#gg3').val()); }
+		if($("#gg4").val()) { ggc.push($('#gg4').val()); }
+		if($("#gg5").val()) { ggc.push($('#gg5').val()); }
+		if($("#gg6").val()) { ggc.push($('#gg6').val()); }
+		if($("#gg7").val()) { ggc.push($('#gg7').val()); }
+		nez.setGGCodes(ggc);
+	}).focus(function(){ nez.hasFocus = false; });;
+
+	function loadURL(rom) {
+		try {
+			var url;
+			if(rom.indexOf("zelex.net") != -1) {
+				url = rom;
+				if(url.indexOf("http://") == -1) {
+					url = "http://" + url;
+				}
+				nez.ui.updateStatus("Downloading...");
+				$.ajax({
+					'url': url,
+					xhr: function() {
+						var xhr = $.ajaxSettings.xhr();
+						if (typeof xhr.overrideMimeType !== 'undefined') {
+							// Download as binary
+							xhr.overrideMimeType('text/plain; charset=x-user-defined');
+						}
+						self.xhr = xhr;
+						return xhr;
+					},
+					complete: function(xhr, status) {
+						var i, data;
+						if (Nezulator.Utils.isIE()) {
+							var charCodes = NezulatorBinaryToArray(xhr.responseBody).toArray();
+							data = String.fromCharCode.apply(undefined, charCodes);
+						} else {
+							data = xhr.responseText;
+						}
+						nez.loadRom(data);
+						nez.start();
+						nez.ui.enable();
+					}
+				});
+			} else {
+				rom = rom.replace("http://", "");
+				url = "http://anyorigin.com/get?binary=1&url=" + escape(rom) + "&callback=?";
+				nez.ui.updateStatus("Downloading...");
+				$.getJSON(url, function(data) {
+					nez.loadRom(unescape(data.contents));
+					nez.start();
+					nez.ui.enable();
+				});
+			}
+			return false;
+		} catch(error) {
+			alert("Internet Explorer is unsupported. Must be a fully HTML5 compliant browser.");
+			return false;
+		}
+	}
+
+	function setupLinks() {
+		$(".searchy a:not(.nezed)").addClass('nezed').click(function(evt) {
+			var rom = $(this).attr("href");
+			loadURL(rom);
+			return false;
+		}).mousedown(function(e){
+			if(e.button == 2) {
+				e.preventDefault();
+				return false;
+			}
+			return true;
+		}).mouseup(function(e){
+			if(e.button == 2) {
+				e.preventDefault();
+				return false;
+			}
+			return true;
+		}).bind("contextmenu", function(e){
+			return false;
+		});
+	}
+
+	function searchRoms() {
+		$("#js-results").text('');
+		var searchVal = $("#searchVal").val();
+		for(var i = 0; i < roms.length; ++i) {
+			if(roms[i][0].toLowerCase().indexOf(searchVal) != -1) {
+				$("<a href='" + roms[i][1] + "'>" + roms[i][0] + "</a><br>").appendTo($("#js-results"));
+			}
+		}
+		setupLinks();
+
+		$('#search-results').gSearch({
+			//search_text: "filetype:nes " + sites + $("#searchVal").val(),
+			search_text: "filetype:nes site:nesfiles.com " + $("#searchVal").val(),
+			pagination: false,
+			count: 10,
+			callback: function() {
+				setupLinks();
+				$('#search-results2').gSearch({
+					search_text: "filetype:nes site:jmlcdburning.net " + $("#searchVal").val(),
+					pagination: false,
+					count: 10,
+					callback: function() {
+						setupLinks();
+						$('#search-results3').gSearch({
+							search_text: "filetype:nes site:gamedendy.narod.ru " + $("#searchVal").val(),
+							pagination: false,
+							count: 10,
+							callback: function() {
+								setupLinks();
+							}
+						});
+					}
+				});
+			}
+		});
+		return false;
+	}
+
+	function updateKeys() {
+		var a = $("#ctrl-a")[0].keyCode;
+		var b = $("#ctrl-b")[0].keyCode;
+		var start = $("#ctrl-start")[0].keyCode;
+		var select = $("#ctrl-select")[0].keyCode;
+		var up = $("#ctrl-up")[0].keyCode;
+		var down = $("#ctrl-down")[0].keyCode;
+		var left = $("#ctrl-left")[0].keyCode;
+		var right = $("#ctrl-right")[0].keyCode;
+		nez.keyboard.keyMap1 = [];
+		nez.keyboard.keyMap1[a] = nez.keyboard.keys.KEY_A;
+		nez.keyboard.keyMap1[b] = nez.keyboard.keys.KEY_B;
+		nez.keyboard.keyMap1[start] = nez.keyboard.keys.KEY_START;
+		nez.keyboard.keyMap1[select] = nez.keyboard.keys.KEY_SELECT;
+		nez.keyboard.keyMap1[up] = nez.keyboard.keys.KEY_UP;
+		nez.keyboard.keyMap1[down] = nez.keyboard.keys.KEY_DOWN;
+		nez.keyboard.keyMap1[left] = nez.keyboard.keys.KEY_LEFT;
+		nez.keyboard.keyMap1[right] = nez.keyboard.keys.KEY_RIGHT;
+		store.set("KEY_A", a);
+		store.set("KEY_B", b);
+		store.set("KEY_START", start);
+		store.set("KEY_SELECT", select);
+		store.set("KEY_UP", up);
+		store.set("KEY_DOWN", down);
+		store.set("KEY_LEFT", left);
+		store.set("KEY_RIGHT", right);
+	}
+
+	$(function() {
+		nez = new Nezulator({
+			'swfPath': '/nezulator/swf/',
+			'ui': $('#nezulator').text('').NezulatorUI()
+		});
+
+		var a = store.get("KEY_A");
+		var b = store.get("KEY_B");
+		var start = store.get("KEY_START");
+		var select = store.get("KEY_SELECT");
+		var up = store.get("KEY_UP");
+		var down = store.get("KEY_DOWN");
+		var left = store.get("KEY_LEFT");
+		var right = store.get("KEY_RIGHT");
+		if(a) { $("#ctrl-a").val(Nezulator.Utils.keyCodeToString(a))[0].keyCode = a; } else { $("#ctrl-a")[0].keyCode = 88; }
+		if(b) { $("#ctrl-b").val(Nezulator.Utils.keyCodeToString(b))[0].keyCode = b; } else { $("#ctrl-b")[0].keyCode = 90; }
+		if(start) { $("#ctrl-start").val(Nezulator.Utils.keyCodeToString(start))[0].keyCode = start; } else { $("#ctrl-start")[0].keyCode = 17; }
+		if(select) { $("#ctrl-select").val(Nezulator.Utils.keyCodeToString(select))[0].keyCode = select; } else { $("#ctrl-select")[0].keyCode = 13; }
+		if(up) { $("#ctrl-up").val(Nezulator.Utils.keyCodeToString(up))[0].keyCode = up; } else { $("#ctrl-up")[0].keyCode = 38; }
+		if(down) { $("#ctrl-down").val(Nezulator.Utils.keyCodeToString(down))[0].keyCode = down; } else { $("#ctrl-down")[0].keyCode = 40; }
+		if(left) { $("#ctrl-left").val(Nezulator.Utils.keyCodeToString(left))[0].keyCode = left; } else { $("#ctrl-left")[0].keyCode = 37; }
+		if(right) { $("#ctrl-right").val(Nezulator.Utils.keyCodeToString(right))[0].keyCode = right; } else { $("#ctrl-right")[0].keyCode = 39; }
+		updateKeys();
+
+		$("#tab-controls input").keydown(function(e) {
+			this.keyCode = e.keyCode;
+			var pressed = Nezulator.Utils.keyCodeToString(e.keyCode);
+			$(this).val(pressed);
+			updateKeys();
+			return false;
+		});
+
+		var urlparam = unescape(gup('rom'));
+		if(urlparam != "") {
+			loadURL(urlparam);
+		}
+
+		$('#twitter1').twitterSearch('nezulator');
+		var db = gup("db");
+		if(db) {
+			$.getScript(db);
+			$("#tab-search").click();
+		}
+	});
+</script> 
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-12175656-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</body>
+</html>
