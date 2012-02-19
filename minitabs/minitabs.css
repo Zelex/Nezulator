@@ -1,0 +1,28 @@
+.minitabsNav ul {
+	overflow: hidden;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	border-bottom: 1px dotted #CCCCCC;
+	margin-bottom: 5px;
+}
+
+.minitabsNav li {
+	float: left;
+	padding: 4px 8px;
+	margin: 0 5px 0 0;
+	color: #999;
+	font-size: 0.9em;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.minitabsNav li.active {
+	background: #F1F1F1;
+	color: #0554AF;
+}
+
+.minitabsContent {
+	clear: both;
+	padding: 5px;
+}
